@@ -51,6 +51,16 @@ async function loadDashboard() {
       });
     };
 
+/ ✅ color logic
+  if (parseInt(kpis["Critical Topics"]) > 5) {
+    document.getElementById("kpiCritical").style.color = "#ff0000";
+  }
+
+  // ✅ timestamp
+  const now = new Date();
+  document.getElementById("statusText").innerText =
+    "Last Updated: " + now.toLocaleString();
+
     fillList("criticalList", critical);
     fillList("riskList", risks);
     fillList("supportList", support);
@@ -60,13 +70,6 @@ async function loadDashboard() {
   }
 }
 
-if (parseInt(kpis["Critical Topics"]) > 5) {
-  document.getElementById("kpiCritical").style.color = "#ff0000";
-}
-const now = new Date();
-
-document.getElementById("statusText").innerText =
-  "Last Updated: " + now.toLocaleString();
 
 // RUN
 loadDashboard();
