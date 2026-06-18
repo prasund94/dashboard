@@ -60,5 +60,15 @@ async function loadDashboard() {
   }
 }
 
+if (parseInt(kpis["Critical Topics"]) > 5) {
+  document.getElementById("kpiCritical").style.color = "#ff0000";
+}
+
 // RUN
 loadDashboard();
+
+const now = new Date();
+
+document.getElementById("statusText").innerText =
+  "Last Updated: " + now.toLocaleString();
+
