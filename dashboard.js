@@ -51,12 +51,12 @@ async function loadDashboard() {
       });
     };
 
-/ ✅ color logic
+
   if (parseInt(kpis["Critical Topics"]) > 5) {
     document.getElementById("kpiCritical").style.color = "#ff0000";
   }
 
-  // ✅ timestamp
+
   const now = new Date();
   document.getElementById("statusText").innerText =
     "Last Updated: " + now.toLocaleString();
