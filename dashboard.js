@@ -1,107 +1,64 @@
 async function loadDashboard() {
-      const criticalEl = document.getElementById('kpiCritical');
-      const sopEl = document.getElementById('kpiSop');
-      const sosEl = document.getElementById('kpiSos');
-      const supportEl = document.getElementById('kpiSupport');
-      const criticalListEl = document.getElementById('criticalList');
-      const riskListEl = document.getElementById('riskList');
-      const supportListEl = document.getElementById('supportList');
-      const statusEl = document.getElementById('statusText');
+  try {
+    const response = await fetch('dashboard.csv');
+    const text = await response.text();
 
-      function setStatus(message, isError = false) {
-        statusEl.textContent = message;
-        statusEl.className = isError ? 'status error' : 'status';
+    const lines = text.trim().split('\n');
+
+    const kpis = {};
+    const critical = [];
+    const risks = [];
+    const support = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',');
+
+      if (cols.length < 3) continue;
+
+      const section = cols[0].trim();
+      const name = cols[1].trim();
+      const value = cols[2].trim();
+
+      if (section === "KPI") {
+        kpis[name] = value;
       }
 
-      try {
-        const response = await fetch('dashboard.csv', { cache: 'no-store' });
-        if (!response.ok) {
-          throw new Error(`Could not load dashboard.csv (${response.status})`);
-        }
+      if (section === "Critical") {
+        critical.push(`${name} — ${value}`);
+      }
 
-        const csvText = await response.text();
-        const rows = parseCSV(csvText);
-        const dataRows = rows.slice(1); // remove header
+      if (section === "Risk") {
+        risks.push(value);
+      }
 
-        const kpis = {};
-        const criticalItems = [];
-        const risks = [];
-        const supports = [];
-
-        for (const row of dataRows) {
-          if (!row.length || row.every(cell => cell.trim() === '')) continue;
-          const [section, name, value] = row;
-          if (section === 'KPI') kpis[name] = value;
-          if (section === 'Critical') criticalItems.push({ name, value });
-          if (section === 'Risk') risks.push(value);
-          if (section === 'Support') supports.push(value);
-        }
-
-        criticalEl.textContent = kpis['Critical Topics'] || '-';
-        sopEl.textContent = kpis['SOP'] || '-';
-        sosEl.textContent = kpis['SOS'] || '-';
-        supportEl.textContent = kpis['Support Needed'] || '-';
-
-        renderList(criticalListEl, criticalItems.map(item => `${item.name} — ${item.value}`));
-        renderList(riskListEl, risks);
-        renderList(supportListEl, supports);
-
-        const now = new Date();
-        setStatus(`Loaded dashboard.csv • Refresh the page after saving changes • ${now.toLocaleTimeString()}`);
-      } catch (error) {
-        console.error(error);
-        setStatus('Could not read dashboard.csv. If you opened the HTML directly from your computer, some browsers block local file access. Open the HTML from OneDrive/SharePoint in the browser, or use a simple local web server.', true);
+      if (section === "Support") {
+        support.push(value);
       }
     }
 
-    function renderList(container, items) {
-      container.innerHTML = '';
-      items.forEach(text => {
-        const li = document.createElement('li');
-        li.textContent = text;
-        container.appendChild(li);
+    document.getElementById("kpiCritical").innerText = kpis["Critical Topics"] || "-";
+    document.getElementById("kpiSop").innerText = kpis["SOP"] || "-";
+    document.getElementById("kpiSos").innerText = kpis["SOS"] || "-";
+    document.getElementById("kpiSupport").innerText = kpis["Support Needed"] || "-";
+
+    const fillList = (id, data) => {
+      const el = document.getElementById(id);
+      el.innerHTML = "";
+      data.forEach(item => {
+        const li = document.createElement("li");
+        li.innerText = item;
+        el.appendChild(li);
       });
-    }
+    };
 
-    function parseCSV(text) {
-      const rows = [];
-      let row = [];
-      let value = '';
-      let insideQuotes = false;
+    fillList("criticalList", critical);
+    fillList("riskList", risks);
+    fillList("supportList", support);
 
-      for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        const nextChar = text[i + 1];
+  } catch (err) {
+    console.error("Failed to load CSV:", err);
+  }
+}
 
-        if (char === '"') {
-          if (insideQuotes && nextChar === '"') {
-            value += '"';
-            i++;
-          } else {
-            insideQuotes = !insideQuotes;
-          }
-        } else if (char === ',' && !insideQuotes) {
-          row.push(value.trim());
-          value = '';
-        } else if ((char === '
-' || char === '') && !insideQuotes) {
-          if (char === '' && nextChar === '
-') i++;
-          row.push(value.trim());
-          if (row.length > 1 || row[0] !== '') rows.push(row);
-          row = [];
-          value = '';
-        } else {
-          value += char;
-        }
-      }
-
-      if (value.length > 0 || row.length > 0) {
-        row.push(value.trim());
-        rows.push(row);
-      }
-
-      return rows;
-    }
-
-    document.addEventListener('DOMContentLoaded', loadDashboard);
+// RUN
+loadDashboard();
