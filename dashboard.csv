@@ -1,0 +1,16 @@
+Section,Name,Value
+KPI,Critical Topics,5
+KPI,SOP,8
+KPI,SOS,2
+KPI,Support Needed,3
+Critical,Electronics,Design freeze pending
+Critical,Software,Integration issue
+Critical,Housing,Tooling delay
+Critical,Certification,Test slot pending
+Critical,System,Validation incomplete
+Risk,R1,Component shortage
+Risk,R2,Integration instability
+Risk,R3,Certification dependency
+Support,S1,Expedite certification slot
+Support,S2,Approve supplier
+Support,S3,Integration testing support
