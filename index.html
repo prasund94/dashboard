@@ -197,21 +197,32 @@
     }
 
        
+    
     .list-box {
       font-size: 15px;
       line-height: 1.8;
+      list-style: none;     /* ✅ removes default bullet */
+      padding-left: 0;      /* ✅ aligns text properly */
     }
     
     .list-box li {
       padding: 6px 0;
       border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
     }
-  
-   .list-box li::before {
-        content: "● ";
-        color: #f97316;
-      }
-   
+    
+    /* ✅ clean modern status dot */
+    .list-box li::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: #f97316;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
 
     .status {
       margin-top: 14px;
@@ -297,7 +308,6 @@
       <div class="status" id="statusText">
         Last Updated: --
       </div>
-      ``
 
     </div>
   </div>
